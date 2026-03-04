@@ -2,12 +2,25 @@
 
 {% block pageheading %}
 menu
+    <div class="categories">
+        {%  for cat in cat_list %}
+            <li> <a href="/menu/{{ cat[0] }}"> {{ cat[1] }}</a></li>
+    {%  endfor %}
+    </div>
 {% endblock %}
 
 {% block main %}
 <div class="products">
+    {%  for coffee in product_list %}
+
+
     <div class="product-box">
-        <h3 class="product-box-heading"></h3>
+        <h3 class="product-box-heading">{{ coffee[0] }}</h3>
+        <p class="product-box-info">{{ coffee[1] }}</p>
+        <img src="/static/images/{{ coffee[3] }}.jpg">
+        <p> <strong>Size: </strong>{{ coffee[2] }}ml</p>
+        <p> <strong>Price: </strong>${{ coffee[4] }}</p>
     </div>
+{%  endfor %}
 </div>
 {% endblock %}
