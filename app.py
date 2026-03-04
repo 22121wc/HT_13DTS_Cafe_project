@@ -1,9 +1,10 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 import sqlite3
 from sqlite3 import Error
-
+from flask_bcrypt import Bcrypt
 app = Flask(__name__)
-
+bcrypt  =Bcrypt(app)
+app.secret_key="Abra"
 DATABASE = "cafe.db"
 
 def connect_database(db_file):
@@ -23,6 +24,34 @@ def connect_database(db_file):
 def render_homepage():
     return render_template('home.html')
 
+@app.route('/signup', methods=['POST','GET'])
+def render_signup_page():
+    if request.method == "POST":
+        fname = request.form.get('user_fname').title().strip()
+        lname = request.form.get('user_lname').title().strip()
+        email = request.form.get('user_email').lower().strip()
+        password = request.form.get('user_password')
+        password2 = request.form.get('user_password2')
+
+        if password != password2:
+            return redirect("\signup?error=passwords+do+not+match")
+        if len(password) < 8:
+            return redirect("\signup?error=password+must+be+over+eight+characters")
+
+        hashed_password = bcrypt.generate_password_hash(password)
+
+        con = connect_database(DATABASE)
+        query_insert = "INSERT INTO user (first_name, last_name, email, password) VALUES (?,?,?,?)"
+
+        cur = con.cursor()
+        cur.execute(query_insert, (fname, lname, email, hashed_password))
+        con.commit()
+        con.close
+    return render_template('signup.html')
+
+@app.route('/login', methods=['POST','GET'])
+def render_login_page():
+    return render_template('login.html')
 
 @app.route('/menu/<cat_id>')
 def render_menu_page(cat_id):
