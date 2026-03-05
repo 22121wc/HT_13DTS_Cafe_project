@@ -17,7 +17,12 @@
         <div class="navbar-links">
             <a href="/">home</a>
             <a href="/menu/1">menu</a>
+            {% if logged_in == True %}
+                <a href="/logout">Logout</a>
+                <a href="/admin">Admin</a>
+            {% else %}
             <a href="/login">Login</a>
+            {%  endif %}
         </div>
     </div>
 </nav>
