@@ -57,7 +57,16 @@ def render_signup_page():
 
 @app.route('/admin', methods=['POST','GET'])
 def render_admin_page():
-    return render_template('admin.html', logged_in=is_logged_in())
+    if not is_logged_in():
+        return redirect('/message=not+logged+in')
+    con=connect_database(DATABASE)
+    query = "SELECT * FROM categories"
+    cur = con.cursor()
+    cur.execute(query)
+    results= cur.fetchall()
+    print(f'results fromc ategory table = {results}')
+    con.close()
+    return render_template('admin.html', logged_in=is_logged_in(), category_list=results)
 @app.route('/login', methods=['POST','GET'])
 def render_login_page():
     #collect info from db
@@ -113,9 +122,21 @@ def render_menu_page(cat_id):
     return render_template('menu.html', product_list = product_list, cat_list = cat_list, logged_in = is_logged_in())
 
 
-@app.route('/contact')
-def render_contact_page():
-    return render_template('contact.html', logged_in = is_logged_in())
+@app.route('delete_category', methods['POST','GET'])
+def delete_category():
+    if not is_logged_in()
+        return redirect('/message=not+logged+in')
 
+    if request.method == 'POST':
+        category = request.form.get('select_cat')
+        print(category)
+        category = category.strip("(")
+        category = category.strip(")")
+        category = category.split(", ")
+
+        cat_id = category[0]
+        cat_name = category[1]
+        print(f'cat_id = {cat_id} and cat name = {cat_name}')
+        return render_template('delete_confirm.html', cat_id=cat_id, cat_name=cat_name, type=category...)
 
 app.run(host='0.0.0.0', debug=True)
