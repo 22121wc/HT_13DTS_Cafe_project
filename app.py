@@ -67,6 +67,21 @@ def render_admin_page():
     print(f'results fromc ategory table = {results}')
     con.close()
     return render_template('admin.html', logged_in=is_logged_in(), category_list=results)
+
+@app.route('/add_category', methods=['POST','GET'])
+def add_category():
+    if not is_logged_in():
+        return redirect('/message=not+logged+in')
+    if request.method == 'POST':
+        cat_name = request.form.get('cat_name')
+        con = connect_database(DATABASE)
+        query_insert = "INSERT INTO categories (cat_name) VALUES (?)"
+        cur = con.cursor()
+        cur.execute(query_insert, (cat_name,))
+        con.commit()
+        con.close()
+        return render_template('admin.html', logged_in=is_logged_in())
+
 @app.route('/login', methods=['POST','GET'])
 def render_login_page():
     #collect info from db
@@ -122,9 +137,9 @@ def render_menu_page(cat_id):
     return render_template('menu.html', product_list = product_list, cat_list = cat_list, logged_in = is_logged_in())
 
 
-@app.route('delete_category', methods['POST','GET'])
+@app.route('/delete_category', methods=['POST','GET'])
 def delete_category():
-    if not is_logged_in()
+    if not is_logged_in():
         return redirect('/message=not+logged+in')
 
     if request.method == 'POST':
@@ -137,6 +152,19 @@ def delete_category():
         cat_id = category[0]
         cat_name = category[1]
         print(f'cat_id = {cat_id} and cat name = {cat_name}')
-        return render_template('delete_confirm.html', cat_id=cat_id, cat_name=cat_name, type=category...)
+        return render_template('delete_confirm.html', cat_id=cat_id, cat_name=cat_name, type="category")
+    return redirect('/admin', logged_in=is_logged_in())
+
+@app.route('/delete_category_confirm/<cat_id>')
+def delete_category_confirm(cat_id):
+    if not is_logged_in():
+        return redirect('/message=not+logged+in')
+        con  =connect_database(DATABASE)
+        query = "DELETE FROM categories WHERE cat_id=?"
+        cur = con.cursor()
+        cur.execute(query, (cat_id,))
+        con.commit()
+        con.close()
+        return redirect('admin')
 
 app.run(host='0.0.0.0', debug=True)
