@@ -159,12 +159,12 @@ def delete_category():
 def delete_category_confirm(cat_id):
     if not is_logged_in():
         return redirect('/message=not+logged+in')
-        con  =connect_database(DATABASE)
-        query = "DELETE FROM categories WHERE cat_id=?"
-        cur = con.cursor()
-        cur.execute(query, (cat_id,))
-        con.commit()
-        con.close()
-        return redirect('admin')
+    con  =connect_database(DATABASE)
+    query = "DELETE FROM categories WHERE cat_id=?"
+    cur = con.cursor()
+    cur.execute(query, (cat_id,))
+    con.commit()
+    con.close()
+    return redirect('/admin')
 
 app.run(host='0.0.0.0', debug=True)
